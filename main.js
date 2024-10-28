@@ -1,5 +1,5 @@
 class Heroi {
-    constructor(nome= "Randon", xp= 1000, ataque=30, vida=1000) {
+    constructor(nome= "Randon", xp= 0, ataque=3, vida=100) {
         this.nome = nome // sera imutavel
         this.xp = xp
         this.nivel = null
@@ -13,14 +13,12 @@ class Heroi {
     exibirInfo(){
         this.nivel = this.verificaNivel()
         let rank = this.verificaRank()
-        
-        console.log('O Herói de nome ' + this.nome + ' está no nível ' + this.nivel)
-        
+                
         console.log("---------------------")
         console.log("| Heroi: " + this.nome)
         console.log("| XP: " + this.xp)
         console.log("| Nivel: " + this.nivel)
-        console.log("| Rank " + rank)
+        console.log("| Rank: " + rank)
         console.log("| Vida: " + this.vida)
         console.log("| Ataque: " + this.ataque)
         console.log("---------------------")
@@ -41,19 +39,30 @@ class Heroi {
         return this.vida
     }
     // sets
-    setXp(xp){
-        this.xp = xp
+    incrementaXp(xp){
+        this.xp += xp
+    }
+    decrementaXp(xp){
+        this.xp -= xp
     }
     
     setVida(vida){
         this.vida = vida
     }
     
-    setVitoria(){
+    setVitoria(valor){
+        this.qtd_vitorias = valor
+    }
+
+    setDerrota(valor){
+        this.qtd_derrotas = valor
+    }
+
+    incrementaVitoria(){
         this.qtd_vitorias += 1
     }
 
-    setDerrota(){
+    incrementaDerrota(){
         this.qtd_derrotas += 1
     }
 
@@ -79,9 +88,8 @@ class Heroi {
     }
     verificaRank(){
         let saldo = this.qtd_vitorias - this.qtd_derrotas 
-
         if (saldo <= 10){ return "Ferro"}
-        else if (saldo > 10 && saldo <= 10){ return "Bronze"}
+        else if (saldo > 10 && saldo <= 20){ return "Bronze"}
         else if (saldo > 20 && saldo <= 50){ return "Prata"}
         else if (saldo > 50 && saldo <= 80){ return "Ouro"}
         else if (saldo > 80 && saldo <= 90){ return "Diamante"}
@@ -94,32 +102,26 @@ class Heroi {
 class Battle{
     constructor(rodadas, herois=[]){
         this.herois = herois // lista de herois
-        this.rodadas = rodadas*1000
+        this.rodadas = rodadas*100
         // Ganho XP
-        this.xp_ataque = 10
-        this.xp_esquiva = 5
-        this.xp_vitoria = 50
-        this.xp_derrota = 30
+        this.xp_ataque = 0
+        this.xp_esquiva = 0
+        this.xp_vitoria = 4
+        this.xp_derrota = 2
         // herois
         this.heroi1 = null
         this.heroi2 = null
     }
     
-    // escholherBatalhadores(){ 
-    //     let indiceAleatorio = Math.floor(Math.random() * this.herois.length);
-    //     this.heroi1 = this.herois[indiceAleatorio]
-        
-    //     indiceAleatorio = Math.floor(Math.random() * this.herois.length);
-    //     this.heroi2 = this.herois[indiceAleatorio]
-
-        
-    // }
 
     iniciarBatalha(){
         // inicio da batalha
         console.log("Inicio da batalha")
-        this.heroi1.exibirInfo()
-        this.heroi2.exibirInfo()
+
+        for(let i = 0; i < this.rodadas; i++){
+            this.todosContraTodos()
+        }
+        this.exibirFimBatalha()
     }
     
     verificaEsquivou(){       // CHANCE DE ESQUIVA  
@@ -139,7 +141,8 @@ class Battle{
                 for(let h2 = 0; h2<this.herois.length; h2++){
                     if (h2 != h1){   // não pode lutar contra si propio
                         this.heroi2 = this.herois[h2]
-                        this.heroi1.setVida()
+                        this.heroi1.setVida(this.heroi1.vida_padrao)
+                        this.heroi2.setVida(this.heroi2.vida_padrao)
                         this.lutar() 
                     }
             }    
@@ -157,31 +160,40 @@ class Battle{
                 esquivou = this.verificaEsquivou()
                 
                 if(esquivou === true){ // h2 esquivou
-                    this.heroi2.setXp(this.heroi2.getXp() + this.xp_esquiva)
+                    this.heroi2.incrementaXp(this.xp_esquiva)
                 }else{
                     this.heroi2.setVida(this.heroi2.getVida() - this.heroi1.getAtaque())  
-                    this.heroi1.setXp(this.heroi1.getXp() + this.xp_ataque)
+                    this.heroi1.incrementaXp(this.xp_ataque)
                 }
             }else{
                 esquivou = this.verificaEsquivou()
                 if(esquivou === true){ // h1 esquivou
-                    this.heroi1.setXp(this.heroi1.getXp() + this.xp_esquiva)
+                    this.heroi1.incrementaXp(this.xp_esquiva)
                 }else{
                     this.heroi1.setVida(this.heroi1.getVida() - this.heroi2.getAtaque()) 
-                    this.heroi2.setXp(this.heroi2.getXp() + this.xp_ataque)
+                    this.heroi2.incrementaXp(this.xp_ataque)
                 }
             }
-            if(this.verificaMorte()){
+            if(this.verificaMorteGanhador()){
                 break
             }
         }
-        this.exibirFimBatalha()
     }
 
-    verificaMorteGanhador(){
+    verificaMorteGanhador(){ //falta
         if(this.heroi1.getVida() <= 0){
-            this.heroi1
-            console.log("Fim da batalha")
+            this.heroi1.incrementaDerrota()
+            this.heroi1.decrementaXp(this.xp_derrota)
+            
+            this.heroi2.incrementaVitoria()
+            this.heroi2.incrementaXp(this.xp_vitoria)
+            return true
+        }else if (this.heroi2.getVida() <= 0){
+            this.heroi2.incrementaDerrota()
+            this.heroi2.decrementaXp(this.xp_derrota)
+            
+            this.heroi1.incrementaVitoria()
+            this.heroi1.incrementaXp(this.xp_vitoria)
             return true
         }else{
             return false
@@ -198,12 +210,9 @@ class Battle{
     
     exibirFimBatalha(){
         console.log("Apresentando os Herois\n")
-        this.heroi1.exibirInfo()
-        this.heroi2.exibirInfo()
-        
-        let ganhador = this.verificarGanhador() === 1 ? this.heroi1.getNome() : this.heroi2.getNome() 
-        // console.log(ganhador)
-        console.log( ganhador + " eh o ganhador da batalha!!!")
+        for(let i = 0; i < this.herois.length ; i++){
+            this.herois[i].exibirInfo()
+        }
     }
 }
 
@@ -211,6 +220,11 @@ class Battle{
 
 ruan = new Heroi("Ruan")
 pablo = new Heroi("Pablo")
+sousa = new Heroi("Sousa")
+estacio = new Heroi("Estacio")
+teste = new Heroi("Teste")
 
-batalha = new Battle(5, ruan, pablo)
-batalha.battle()
+herois = [ruan, pablo, sousa, estacio, teste]
+
+batalha = new Battle(3, herois)
+batalha.iniciarBatalha()
