@@ -1,18 +1,18 @@
-# rank-heroi
-Classificador de rank de heroi baseado no saldo de rank (vitoria - derrota). Esse repositorio é parte de um desafio do bootcamp da DIO.
+# Rank do Heroi
+###### Classificador de rank de heroi baseado no saldo de rank (vitoria - derrota). Esse repositorio é parte de um desafio do bootcamp da DIO.
 
-Minha ideia aqui vai ser evoluir o código feito em outro bootcamp. [Link do repositório](git@github.com:Ruan-Pablo/classificador-nivel-heroi.git)
+Minha ideia aqui vai ser evoluir o código feito em outra parte do bootcamp. [Link do repositório](git@github.com:Ruan-Pablo/classificador-nivel-heroi.git)
 
-## Detalhses
+## Detalhes
 
-- ira poder ter quantidade de herois indefinida
-- será todos os herois contra(ganha quem tiver mais sorte)
-- todos os herois tem revanche com 3 rodadas
+- Tem quantidade de herois ilimitada
+- Todos contra todos (ganha quem tiver mais sorte)
+- todos os herois tem revanche com a quantidade estabelecida de rodadas
 
 ## Como está funcionando agora
 
-Eu recebo um array no construtor com os herois. Para fazer eles lutarem entre si, eu faço um for dentro de for e vou atribuindo as variaveis herois 1 e 2 com os herois da posição do array.
+Eu recebo um array no construtor da classe herois com os herois. Para fazer eles lutarem entre si, percorro o array com os herois e faço todos batalharem com todos.
 
 ## Problema
 
-Achar valores que sejam equilibrados xp de ataque, esquiva, vitoria, derrota, valores para rank, vida, ataque, é bem complicado. 
+Equilibrar valores de: atribuição de xp, esquiva, vitoria, derrota, e valores para rank, vida, ataque, para que eles não gerem valores absurdos. 
